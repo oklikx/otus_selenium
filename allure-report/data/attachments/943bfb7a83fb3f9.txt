@@ -1,0 +1,2 @@
+2026-08-27 20:39:24,398 [INFO] (LoginPage) Открытие URL: https://example.com
+2026-08-27 20:39:24,595 [INFO] (LoginPage) Ввод логина: 'standard_user'

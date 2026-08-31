@@ -1,8 +1,13 @@
 """Тесты для переключения валюты"""
+import allure
 from src.pom.pages.home_page import HomePage
 from src.pom.components.header import Header
 
 
+@allure.epic("Инетрнет-магазин PrestaShop")
+@allure.feature("Валюта")
+@allure.story("Переключение валюты с евро на доллары на главной странице")
+@allure.severity(allure.severity_level.MINOR)
 def test_currency_switch_home_page(driver):
     """Тест на переключение валюты с евро на доллары на главной странице"""
     home_page = HomePage(driver)
