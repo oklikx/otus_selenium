@@ -1,0 +1,2 @@
+[32mINFO    [0m LoginPage:login_page.py:13 Открытие URL: https://example.com
+[32mINFO    [0m LoginPage:login_page.py:18 Ввод логина: 'standard_user'

@@ -1,2 +1,3 @@
 pytest==9.1.1
 selenium
+allure-pytest==2.14.1

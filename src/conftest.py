@@ -1,13 +1,15 @@
 """conftest.py"""
+import allure
 import pytest
 import os
 from selenium.webdriver.chrome.options import Options
-
+from src.logger_config import setup_logger
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.webdriver import LocalWebDriver
 
+setup_logger()
 
 # def pytest_addoption(parser):
 #     # Добавляем выбор браузера
@@ -33,7 +35,7 @@ from selenium.webdriver.common.webdriver import LocalWebDriver
 
 
 # @pytest.fixture(scope="function")
-# def driver(request):
+# def driver(request):ы
 #     browser_name = request.config.getoption("--browser").lower()
 
 #     if browser_name == "chrome":
@@ -82,3 +84,25 @@ def driver():
     browser = webdriver.Chrome(options=options)
     yield browser
     browser.quit()
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    rep = outcome.get_result()
+
+    # Если тест выполнялся и упал (FAILED)
+    if rep.when == "call" and rep.failed:
+        try:
+            # Ищем фикстуру 'driver' в упавшем тесте
+            if "driver" in item.fixturenames:
+                web_driver = item.funcargs["driver"]
+
+                # Делаем скриншот и прикрепляем его в Allure
+                allure.attach(
+                    web_driver.get_screenshot_as_png(),
+                    name="Скриншот при падении",
+                    attachment_type=allure.attachment_type.PNG
+                )
+        except Exception as e:
+            print(f"Не удалось сделать скриншот: {e}")

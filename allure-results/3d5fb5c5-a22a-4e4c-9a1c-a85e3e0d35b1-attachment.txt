@@ -1,0 +1,11 @@
+[32mINFO    [0m AutomationFramework.AuthPage:auth_page.py:19 Открываем страницу логина
+[32mINFO    [0m AutomationFramework.AuthPage:auth_page.py:25 Открываем форму регистрации
+[32mINFO    [0m AutomationFramework.AuthPage:auth_page.py:28 Проставляем чекбокс Mrs.
+[32mINFO    [0m AutomationFramework.AuthPage:auth_page.py:31 Заполняем имя
+[32mINFO    [0m AutomationFramework.AuthPage:auth_page.py:35 Заполняем фамилию
+[32mINFO    [0m AutomationFramework.AuthPage:auth_page.py:42 Заполняем почту
+[32mINFO    [0m AutomationFramework.AuthPage:auth_page.py:46 Заполняем пароль
+[32mINFO    [0m AutomationFramework.AuthPage:auth_page.py:50 Отмечаем чекбокс I agree to the terms and conditions and the privacy policy
+[32mINFO    [0m AutomationFramework.AuthPage:auth_page.py:55 Отмечаем чекбокс Customer data privacy
+[32mINFO    [0m AutomationFramework.AuthPage:auth_page.py:59 Нажимаем на кнопку Create Account
+[32mINFO    [0m AutomationFramework.HeaderComponent:header.py:21 Получили элемент пользовательского меню

@@ -1,8 +1,13 @@
 """Тесты для удаления товара из корзины"""
+import allure
 from src.pom.pages.home_page import HomePage
 from src.pom.pages.cart_page import CartPage
 
 
+@allure.epic("Интернет-магазин PrestaShop")
+@allure.feature("Добавление товара в корзину")
+@allure.story("Добавить товар в корзину и удалить его")
+@allure.severity(allure.severity_level.BLOCKER)
 def test_delete_product_from_cart(driver):
     """Тесты на добавление товара в корзину с последующим его удалением"""
     home_page = HomePage(driver)
