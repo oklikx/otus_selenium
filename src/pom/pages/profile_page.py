@@ -1,6 +1,7 @@
 """Страница профиля"""
 import logging
 import allure
+from selenium.webdriver.support import expected_conditions as EC
 from src.pom.pages.base_page import BasePage
 from src.pom.locators.presta_shop_profile_locators import ProfilePageLocators
 from src.helpers.make_js_click import make_js_click
@@ -16,7 +17,9 @@ class ProfilePage(BasePage):
     def get_page_title(self):
         """Получить элемент заголовка страницы"""
         logger.info("Получили элемент заголовка страницы")
-        return self.driver.find_element(*ProfilePageLocators.PAGE_TITLE)
+        return self.wait.until(
+            EC.presence_of_element_located(ProfilePageLocators.PAGE_TITLE)
+        )
 
     @allure.step
     def click_signout_link(self):
