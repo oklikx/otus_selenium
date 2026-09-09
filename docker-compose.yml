@@ -8,13 +8,19 @@ services:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: prestashop
     networks:
-      - prestashop_network
+      - selenoid
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 5
+
   prestashop:
     container_name: prestashop
     image: prestashop/prestashop:latest
     restart: unless-stopped
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     ports:
       - 8080:80
     environment:
@@ -23,8 +29,27 @@ services:
       DB_USER: root
       DB_PASSWD: admin
       PS_INSTALL_AUTO: 1
-      PS_DOMAIN: localhost:8080
+      PS_DOMAIN: prestashop
     networks:
-      - prestashop_network
+      selenoid:
+        aliases:
+          - localhost
+    healthcheck:
+      test: ["CMD", "test", "-f", "/var/www/html/index.php"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  tests:
+    image: prestashop-tests
+    depends_on:
+      prestashop:
+        condition: service_healthy
+    networks:
+      - selenoid
+    command: tests/ --url http://localhost:8080 --browser chrome
+
 networks:
-    prestashop_network:
+  selenoid:
+    external: true
