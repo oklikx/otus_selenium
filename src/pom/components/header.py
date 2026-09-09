@@ -26,9 +26,10 @@ class Header():
     @allure.step
     def get_my_profile_link(self):
         """Ссылка на профиль пользователя"""
-
         logger.info("Получили ссылку на профиль пользователя")
-        return self.driver.find_element(*HeaderLocators.MY_PROFILE)
+        return WebDriverWait(self.driver, 15).until(
+            EC.presence_of_element_located(HeaderLocators.MY_PROFILE)
+        )
 
     @allure.step
     def get_currency_select_options(self):

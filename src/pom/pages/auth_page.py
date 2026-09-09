@@ -4,6 +4,7 @@ import allure
 from src.pom.pages.base_page import BasePage
 from src.pom.locators.presta_shop_signup_locators import SignupLocators
 from src.data.urls import LOGIN_PAGE_URL
+from src.helpers.generate_random_email import generate_random_email
 from src.helpers.make_js_click import make_js_click
 
 
@@ -35,13 +36,15 @@ class AuthPage(BasePage):
         logger.info("Заполняем фамилию")
         self.driver.find_element(
             *SignupLocators.LASTNAME_INPUT).send_keys('Капитальцева')
+
         # Емейл сохраняется где-то в сторе приложения, из-за чего на форме
         # срабатывает валидация (такая почта уже есть), каждый раз,
         # если тест падает, надо придумывать новую почту
-
         logger.info("Заполняем почту")
+        email = generate_random_email()
+        logger.info('Сгенерировали рандомную почту - %s', email)
         self.driver.find_element(
-            *SignupLocators.EMAIL_INPUT).send_keys('testemail3226@mail.ru')
+            *SignupLocators.EMAIL_INPUT).send_keys(email)
 
         logger.info("Заполняем пароль")
         self.driver.find_element(

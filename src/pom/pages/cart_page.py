@@ -30,7 +30,10 @@ class CartPage(BasePage):
     def get_link_to_product(self):
         """Получить элемент ссылки на добавленный товар"""
         logger.info("Получили элемент ссылки на добавленный товар")
-        return self.driver.find_element(*CartPageLocators.LINK_TO_PRODUCT)
+        link = self.wait.until(EC.presence_of_element_located(
+            CartPageLocators.LINK_TO_PRODUCT))
+
+        return link
 
     @allure.step
     def delete_product(self):

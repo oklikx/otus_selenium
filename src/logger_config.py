@@ -1,7 +1,10 @@
+"""logger config"""
 import logging
 
 
 def setup_logger(name="AutomationFramework"):
+    """Настройка логгера при запуске тестов,
+        записывает логи в файл и консоль"""
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
