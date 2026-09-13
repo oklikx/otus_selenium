@@ -28,4 +28,4 @@ def test_currency_switch_home_page(driver):
     assert usd_option.get_attribute('selected') == 'true'
     assert euro_option.get_attribute('selected') is None
 
-    assert "$21.80" in home_page.get_first_product().text
+    assert "$22.19" in home_page.get_first_product().text

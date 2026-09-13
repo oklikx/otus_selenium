@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   mysql:
     container_name: some-mysql
@@ -9,12 +10,18 @@ services:
       MYSQL_DATABASE: prestashop
     networks:
       - prestashop_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 5
+
   prestashop:
     container_name: prestashop
     image: prestashop/prestashop:latest
     restart: unless-stopped
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     ports:
       - 8080:80
     environment:
@@ -23,8 +30,82 @@ services:
       DB_USER: root
       DB_PASSWD: admin
       PS_INSTALL_AUTO: 1
-      PS_DOMAIN: localhost:8080
+      PS_DOMAIN: prestashop
     networks:
       - prestashop_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 120s
+
+  # -------- Selenoid инфраструктура --------
+
+  selenoid:
+    image: aerokube/selenoid:latest
+    container_name: selenoid
+    restart: unless-stopped
+    networks:
+      - prestashop_network
+    ports:
+      - "4444:4444"
+    volumes:
+      - ./config:/etc/selenoid
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: ["-container-network", "selenoid", "-limit", "5"]
+
+  selenoid-ui:
+    image: aerokube/selenoid-ui:latest
+    container_name: selenoid-ui
+    restart: unless-stopped
+    networks:
+      - prestashop_network
+    ports:
+      - "8081:8080"
+    command: ["--selenoid-uri", "http://selenoid:4444"]
+    depends_on:
+      - selenoid
+
+  ggr:
+    image: aerokube/ggr:latest
+    container_name: ggr
+    restart: unless-stopped
+    networks:
+      - prestashop_network
+    ports:
+      - "4445:4444"
+    volumes:
+      - ./ggr:/etc/grid-router
+    depends_on:
+      - selenoid
+
+  ggr-ui:
+    image: aerokube/ggr-ui:latest
+    container_name: ggr-ui
+    restart: unless-stopped
+    networks:
+      - prestashop_network
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./ggr:/etc/grid-router
+    depends_on:
+      - ggr
+
+  # -------- Тесты --------
+
+  tests:
+    image: prestashop-tests
+    depends_on:
+      prestashop:
+        condition: service_healthy
+      selenoid:
+        condition: service_started
+    networks:
+      - prestashop_network
+    command: tests/ --url http://prestashop --browser chrome
 networks:
-    prestashop_network:
+  prestashop_network:
+    external:
+      name: selenoid
