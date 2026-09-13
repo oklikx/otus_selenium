@@ -14,11 +14,10 @@
 3. docker run --rm -v ${PWD}:/app -p 8081:8081 --entrypoint allure tests serve /app/allure-results -h 0.0.0.0 -p 8081
 
 1. docker network create selenoid
-2. запустить selenoid: docker run -d --name selenoid --network selenoid -p 4444:4444 -v /var/run/docker.sock:/var/run/docker.sock aerokube/selenoid:latest
-3. docker network create selenoid-ui
-4. запустить selenoid-ui: docker run -d --name selenoid-ui --network selenoid -p 8090:8080 aerokube/selenoid-ui:1.10.11 --selenoid-uri http://selenoid:4444
-5. установить нужные для докера зависимости(собрать образ): docker build -t prestashop-tests .
-6. docker-compose up -d
-7. дождаться, когда prestashop станет healthy (docker ps | findstr prestashop)
-8. docker run --rm --network selenoid prestashop-tests tests/ --url http://prestashop --browser chrome
-
+2. docker build -t prestashop-tests .
+3. проверить конфигурацию selenoid (config/browsers.json)
+4. В папке ./ggr должен лежать файл quota.json
+5. Поднять всё окружение - docker-compose up -d
+6. Дождаться готовности prestashop (должно быть healthy) - docker ps --filter "name=prestashop"
+7. Посмотреть результаты тестов - docker-compose logs tests
+8. Если нужно запустить тесты повторно - docker-compose up tests
