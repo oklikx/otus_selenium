@@ -13,9 +13,9 @@ from src.helpers.make_js_click import make_js_click
 @allure.story("Зарегистрировать пользователя и разлогиниться")
 @allure.severity(allure.severity_level.BLOCKER)
 @allure.title("Регистрация пользователя с последующим разлогином")
-def test_auth(driver):
+def test_auth(driver, base_url):
     """Тест на регистрацию профиля и разлогин"""
-    auth_page = AuthPage(driver)
+    auth_page = AuthPage(driver, base_url)
 
     auth_page.open()
     auth_page.sign_up()
@@ -27,7 +27,7 @@ def test_auth(driver):
     user_menu.click()
     make_js_click(driver, header.get_my_profile_link())
 
-    profile_page = ProfilePage(driver)
+    profile_page = ProfilePage(driver, base_url)
     assert 'Welcome Екатерина Капитальцева' in profile_page.get_page_title().text
 
     profile_page.click_signout_link()
