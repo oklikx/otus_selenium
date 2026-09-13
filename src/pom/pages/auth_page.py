@@ -3,7 +3,6 @@ import logging
 import allure
 from src.pom.pages.base_page import BasePage
 from src.pom.locators.presta_shop_signup_locators import SignupLocators
-from src.data.urls import LOGIN_PAGE_URL
 from src.helpers.generate_random_email import generate_random_email
 from src.helpers.make_js_click import make_js_click
 
@@ -18,7 +17,7 @@ class AuthPage(BasePage):
     def open(self):
         """Открыть страницу регистрации"""
         logger.info("Открываем страницу логина")
-        self.driver.get(LOGIN_PAGE_URL)
+        self.driver.get(f"{self.base_url}/index.php?controller=authentication")
 
     @allure.step("Заполнение формы регистрации")
     def sign_up(self):

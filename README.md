@@ -21,3 +21,10 @@
 6. Дождаться готовности prestashop (должно быть healthy) - docker ps --filter "name=prestashop"
 7. Посмотреть результаты тестов - docker-compose logs tests
 8. Если нужно запустить тесты повторно - docker-compose up tests
+
+
+Запуск локально 4 варианта
+- локально chrome - pytest src/tests/ --url http://localhost:8080 --browser chrome --executor local
+- локально firefox - pytest src/tests/ --url http://localhost:8080 --browser firefox --executor local
+- на selenoid chrome - pytest src/tests/ --url http://prestashop --browser chrome --executor selenoid --selenoid_url http://localhost:4444/wd/hub
+- на selenoid firefox - pytest src/tests/ --url http://prestashop --browser firefox --browser_version 125.0 --executor selenoid --selenoid_url http://localhost:4444/wd/hub
