@@ -10,14 +10,25 @@ setup_logger()
 
 
 def pytest_addoption(parser):
-    """Выбор браузера, по умолчанию хром"""
+    """Опции, которые можно передавать из Jenkins."""
     parser.addoption(
         "--browser",
         action="store",
         default="chrome",
         help="Браузер для тестов: chrome, firefox"
     )
-    # Добавляем базовый URL
+    parser.addoption(
+        "--browser-version",
+        action="store",
+        default="128.0",
+        help="Версия браузера, например 128.0"
+    )
+    parser.addoption(
+        "--selenoid-url",
+        action="store",
+        default="http://localhost:4444/wd/hub",
+        help="Адрес Selenoid (executor)"
+    )
     parser.addoption(
         "--url",
         action="store",
@@ -28,43 +39,64 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope="session")
 def base_url(request):
-    """Фикстура возвращает базовый URL без лишних слэшей на конце."""
+    """Базовый URL без лишних слэшей на конце."""
     return request.config.getoption("--url").rstrip("/")
 
 
+@pytest.fixture(scope="session")
+def selenoid_url(request):
+    return request.config.getoption("--selenoid-url")
+
+
+@pytest.fixture(scope="session")
+def browser_name(request):
+    return request.config.getoption("--browser").lower()
+
+
+@pytest.fixture(scope="session")
+def browser_version(request):
+    return request.config.getoption("--browser-version")
+
+
 @pytest.fixture
-def driver(request):
-    """Создаёт выбранный браузер в headless-режиме для Docker."""
-    browser_name = request.config.getoption("--browser").lower()
+def driver(request, selenoid_url, browser_name, browser_version):
+    """Создаёт Remote WebDriver в Selenoid."""
+    test_name = request.node.name
 
     if browser_name == "chrome":
         options = ChromeOptions()
-        # НАСТРОЙКИ ДЛЯ DOCKER (Обязательны для Linux без графической оболочки)
-        options.add_argument("--headless=new")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--window-size=1280,900")
-        options.add_argument("--disable-blink-features=AutomationControlled")
-        options.add_argument("--lang=ru-RU")
-
-        browser = webdriver.Chrome(options=options)
-
     elif browser_name == "firefox":
         options = FirefoxOptions()
-        # НАСТРОЙКИ ДЛЯ DOCKER (Обязательны для Linux без графической оболочки)
-        options.add_argument("--headless")
-
-        browser = webdriver.Firefox(options=options)
     else:
         raise Exception(f"Браузер {browser_name} не поддерживается")
 
+    options.set_capability("browserName", browser_name)
+    options.set_capability("browserVersion", browser_version)
+    options.set_capability("selenoid:options", {
+        "enableVNC": True,
+        "enableVideo": False,
+        "name": test_name,
+    })
+
+    browser = webdriver.Remote(
+        command_executor=selenoid_url,
+        options=options,
+    )
+
+    browser.set_page_load_timeout(30)
+    browser.implicitly_wait(0)
+
     yield browser
-    browser.quit()
+
+    try:
+        browser.quit()
+    except Exception as e:
+        print(f"Не удалось корректно закрыть браузер: {e}")
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """делает скриншоты при падении тестов"""
+    """Делает скриншоты при падении тестов."""
     outcome = yield
     rep = outcome.get_result()
 

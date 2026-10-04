@@ -12,3 +12,15 @@
 1. docker run -it --network host -v ${PWD}/allure-results:/app/allure-results tests --browser firefox --alluredir=/app/allure-results
 2. docker run --rm -v ${PWD}:/app --entrypoint allure tests generate /app/allure-results --output /app/allure-report --clean
 3. docker run --rm -v ${PWD}:/app -p 8081:8081 --entrypoint allure tests serve /app/allure-results -h 0.0.0.0 -p 8081
+
+
+Для запуска jenkins
+1. docker build -t myjenkins .
+2. docker run -d -v jenkins_home:/var/jenkins_home -p 8088:8080 --restart=on-failure --name jenkins myjenkins
+
+Дл получения пароля от jenkins
+docker logs <4 первые символа >
+
+Перезапросить пароль
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+
