@@ -13,17 +13,17 @@ from src.helpers.make_js_click import make_js_click
 @allure.story("Зарегистрировать пользователя и разлогиниться")
 @allure.severity(allure.severity_level.BLOCKER)
 @allure.title("Регистрация пользователя с последующим разлогином")
-def test_auth(driver):
+def test_auth(driver, base_url):
     """Тест на регистрацию профиля и разлогин"""
     auth_page = AuthPage(driver)
 
-    auth_page.open()
+    auth_page.open(base_url)
     auth_page.sign_up()
 
     header = Header(driver)
     user_menu = header.get_user_menu()
 
-    assert "Екатерина Капитальцева" in user_menu.text
+    assert "Е.К." in user_menu.text
     user_menu.click()
     make_js_click(driver, header.get_my_profile_link())
 
