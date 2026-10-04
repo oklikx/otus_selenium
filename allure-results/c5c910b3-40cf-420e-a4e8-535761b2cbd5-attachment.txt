@@ -1,0 +1,5 @@
+[32mINFO    [0m AutomationFramework.HomePage:home_page.py:21 Открываем главную страницу - http://localhost:8080
+[32mINFO    [0m AutomationFramework.HomePage:home_page.py:64 Получили элемент первого товара
+[32mINFO    [0m AutomationFramework.HeaderComponent:header.py:41 Получили массив опций валют
+[32mINFO    [0m AutomationFramework.HeaderComponent:header.py:41 Получили массив опций валют
+[32mINFO    [0m AutomationFramework.HomePage:home_page.py:64 Получили элемент первого товара

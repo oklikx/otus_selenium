@@ -1,0 +1,7 @@
+[32mINFO    [0m AutomationFramework.HomePage:home_page.py:21 Открываем главную страницу - http://localhost:8080
+[32mINFO    [0m AutomationFramework.HomePage:home_page.py:41 Добавили случайный товар в корзину
+[32mINFO    [0m AutomationFramework.HomePage:home_page.py:44 Получили ссылку на ожидаемый товар
+[32mINFO    [0m AutomationFramework.HomePage:home_page.py:53 Открыли модальное окно добавления в товара
+[32mINFO    [0m AutomationFramework.HomePage:home_page.py:59 Перешли в корзину
+[32mINFO    [0m AutomationFramework.CartPage:cart_page.py:38 Удалили из корзины 1 товар
+[32mINFO    [0m AutomationFramework.CartPage:cart_page.py:50 Получили элемент плашки о том, что товар успешно удалён
