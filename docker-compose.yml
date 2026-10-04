@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   mysql:
@@ -30,7 +30,7 @@ services:
       DB_USER: root
       DB_PASSWD: admin
       PS_INSTALL_AUTO: 1
-      PS_DOMAIN: prestashop
+      PS_DOMAIN: host.docker.internal:8080
     networks:
       - prestashop_network
     healthcheck:
@@ -54,6 +54,8 @@ services:
       - ./config:/etc/selenoid
       - /var/run/docker.sock:/var/run/docker.sock
     command: ["-container-network", "selenoid", "-limit", "5"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   selenoid-ui:
     image: aerokube/selenoid-ui:latest
@@ -105,6 +107,8 @@ services:
     networks:
       - prestashop_network
     command: tests/ --url http://prestashop --browser chrome
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 networks:
   prestashop_network:
     external:

@@ -4,7 +4,6 @@ import logging
 import allure
 from selenium.webdriver.support import expected_conditions as EC
 from src.pom.pages.base_page import BasePage
-from src.data.urls import BASE_URL
 from src.pom.locators.presta_shop_home_locators import PrestaShopHomeLocators
 from src.helpers.make_js_click import make_js_click
 
@@ -18,8 +17,8 @@ class HomePage(BasePage):
     @allure.step
     def open(self):
         """Открыть главную страницу"""
-        logger.info("Открываем главную страницу - %s", BASE_URL)
-        self.driver.get(BASE_URL)
+        logger.info("Открываем главную страницу - %s", self.base_url)
+        self.driver.get(self.base_url)
 
     @allure.step
     def add_random_product_to_cart(self):

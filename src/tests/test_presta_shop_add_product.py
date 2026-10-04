@@ -9,9 +9,9 @@ from src.pom.pages.cart_page import CartPage
 @allure.story("Добавление товаров")
 @allure.severity(allure.severity_level.CRITICAL)
 @allure.title("Добавление случайного продукта в корзину с проверкой в UI")
-def test_add_product_to_cart(driver):
+def test_add_product_to_cart(driver, base_url):
     """Тест на добавление рандомного продкута в корзину"""
-    home_page = HomePage(driver)
+    home_page = HomePage(driver, base_url)
 
     home_page.open()
 
@@ -19,7 +19,7 @@ def test_add_product_to_cart(driver):
 
     home_page.open_cart_modal_and_go_to_cart()
 
-    cart_page = CartPage(driver)
+    cart_page = CartPage(driver, base_url)
     product_link = cart_page.get_link_to_product().get_attribute('href')
 
     with allure.step("Проверяем что заголовок страницы - Shopping Cart"):

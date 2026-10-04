@@ -8,9 +8,9 @@ from src.pom.components.header import Header
 @allure.feature("Валюта")
 @allure.story("Переключение валюты с евро на доллары на главной странице")
 @allure.severity(allure.severity_level.MINOR)
-def test_currency_switch_home_page(driver):
+def test_currency_switch_home_page(driver, base_url):
     """Тест на переключение валюты с евро на доллары на главной странице"""
-    home_page = HomePage(driver)
+    home_page = HomePage(driver, base_url)
     home_page.open()
 
     assert '€19.12' in home_page.get_first_product().text
