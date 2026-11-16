@@ -13,7 +13,7 @@ def test_add_product_to_cart(driver, base_url):
     """Тест на добавление рандомного продкута в корзину"""
     home_page = HomePage(driver, base_url)
 
-    home_page.open()
+    home_page.open(base_url)
 
     exptected_product_url = home_page.add_random_product_to_cart()
 

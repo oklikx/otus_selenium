@@ -10,12 +10,24 @@ setup_logger()
 
 
 def pytest_addoption(parser):
-    """Опции командной строки для выбора браузера и способа запуска."""
+    """Опции, которые можно передавать из Jenkins."""
     parser.addoption(
         "--browser",
         action="store",
         default="chrome",
         help="Браузер для тестов: chrome, firefox",
+    )
+    parser.addoption(
+        "--browser-version",
+        action="store",
+        default="128.0",
+        help="Версия браузера, например 128.0"
+    )
+    parser.addoption(
+        "--selenoid-url",
+        action="store",
+        default="http://localhost:4444/wd/hub",
+        help="Адрес Selenoid (executor)"
     )
     parser.addoption(
         "--url",
@@ -46,74 +58,59 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope="session")
 def base_url(request):
-    """Возвращает базовый URL без лишних слэшей на конце."""
+    """Базовый URL без лишних слэшей на конце."""
     return request.config.getoption("--url").rstrip("/")
 
 
-def _build_options(browser_name: str, executor: str):
-    """Создаёт Options для выбранного браузера с учётом executor."""
-    if browser_name == "chrome":
-        options = ChromeOptions()
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--window-size=1280,900")
-        options.add_argument("--disable-blink-features=AutomationControlled")
-        options.add_argument("--lang=ru-RU")
-        # headless нужен только для локального запуска в Docker/Linux
-        if executor == "local":
-            options.add_argument("--headless=new")
-        return options
+@pytest.fixture(scope="session")
+def selenoid_url(request):
+    return request.config.getoption("--selenoid-url")
 
-    if browser_name == "firefox":
-        options = FirefoxOptions()
-        options.add_argument("--width=1280")
-        options.add_argument("--height=900")
-        if executor == "local":
-            options.add_argument("--headless")
-        return options
 
-    raise Exception(f"Браузер {browser_name} не поддерживается")
+@pytest.fixture(scope="session")
+def browser_name(request):
+    return request.config.getoption("--browser").lower()
+
+
+@pytest.fixture(scope="session")
+def browser_version(request):
+    return request.config.getoption("--browser-version")
 
 
 @pytest.fixture
-def driver(request):
-    """Создаёт браузер локально или на Selenoid."""
-    browser_name = request.config.getoption("--browser").lower()
-    browser_version = request.config.getoption("--browser_version")
-    executor = request.config.getoption("--executor")
-    selenoid_url = request.config.getoption("--selenoid_url")
+def driver(request, selenoid_url, browser_name, browser_version):
+    """Создаёт Remote WebDriver в Selenoid."""
+    test_name = request.node.name
 
-    options = _build_options(browser_name, executor)
-
-    if executor == "local":
-        # Локальный запуск: Selenium Manager сам подберёт драйвер
-        if browser_name == "chrome":
-            browser = webdriver.Chrome(options=options)
-        else:
-            browser = webdriver.Firefox(options=options)
-
-    elif executor == "selenoid":
-        # Удалённый запуск через Selenoid
-        options.set_capability("browserName", browser_name)
-        options.set_capability("browserVersion", browser_version)
-        options.set_capability(
-            "selenoid:options",
-            {
-                "enableVNC": True,
-                "enableVideo": False,
-                "name": request.node.name,
-            },
-        )
-        browser = webdriver.Remote(
-            command_executor=selenoid_url,
-            options=options,
-        )
-
+    if browser_name == "chrome":
+        options = ChromeOptions()
+    elif browser_name == "firefox":
+        options = FirefoxOptions()
     else:
         raise Exception(f"Executor {executor} не поддерживается")
 
+    options.set_capability("browserName", browser_name)
+    options.set_capability("browserVersion", browser_version)
+    options.set_capability("selenoid:options", {
+        "enableVNC": True,
+        "enableVideo": False,
+        "name": test_name,
+    })
+
+    browser = webdriver.Remote(
+        command_executor=selenoid_url,
+        options=options,
+    )
+
+    browser.set_page_load_timeout(30)
+    browser.implicitly_wait(0)
+
     yield browser
-    browser.quit()
+
+    try:
+        browser.quit()
+    except Exception as e:
+        print(f"Не удалось корректно закрыть браузер: {e}")
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)

@@ -13,18 +13,14 @@
 2. docker run --rm -v ${PWD}:/app --entrypoint allure tests generate /app/allure-results --output /app/allure-report --clean
 3. docker run --rm -v ${PWD}:/app -p 8081:8081 --entrypoint allure tests serve /app/allure-results -h 0.0.0.0 -p 8081
 
-1. docker network create selenoid
-2. docker build -t prestashop-tests .
-3. проверить конфигурацию selenoid (config/browsers.json)
-4. В папке ./ggr должен лежать файл quota.json
-5. Поднять всё окружение - docker-compose up -d
-6. Дождаться готовности prestashop (должно быть healthy) - docker ps --filter "name=prestashop"
-7. Посмотреть результаты тестов - docker-compose logs tests
-8. Если нужно запустить тесты повторно - docker-compose up tests
 
+Для запуска jenkins
+1. docker build -t myjenkins .
+2. docker run -d -v jenkins_home:/var/jenkins_home -p 8088:8080 --restart=on-failure --name jenkins myjenkins
 
-Запуск локально 4 варианта
-- локально chrome - pytest src/tests/ --url http://localhost:8080 --browser chrome --executor local
-- локально firefox - pytest src/tests/ --url http://localhost:8080 --browser firefox --executor local
-- на selenoid chrome - pytest src/tests/ --url http://prestashop --browser chrome --executor selenoid --selenoid_url http://localhost:4444/wd/hub
-- на selenoid firefox - pytest src/tests/ --url http://prestashop --browser firefox --browser_version 125.0 --executor selenoid --selenoid_url http://localhost:4444/wd/hub
+Дл получения пароля от jenkins
+docker logs <4 первые символа >
+
+Перезапросить пароль
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+
