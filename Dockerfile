@@ -31,3 +31,14 @@ WORKDIR /app/src
 ENTRYPOINT ["pytest"]
 CMD []
 ENV PYTHONPATH=/app/src
+
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
+    apt-get update && apt-get install -y \
+    chromium \
+    chromium-driver \
+    firefox-esr \
+    gcc \
+    wget \
+    unzip \
+    default-jre \
+    && rm -rf /var/lib/apt/lists/*
