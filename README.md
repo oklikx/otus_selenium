@@ -2,7 +2,7 @@
 
 Для запуска тестов через докер нужно выполнить следующие действия:
 
-1. установить нужные для докера зависимости(собрать образ): docker build -t tests .
+1. установить нужные для докера зависимости(собрать образ): docker build -t prestashop-tests .
 2. тесты в хроме: docker run -it --network host tests
 3. тесты в firefox: docker run -it --network host tests --browser firefox
 4. в хроме можно по анлогии с пунктом 3, заменив firefox на chrome(просто chrome по умолчанию итак)

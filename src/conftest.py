@@ -15,7 +15,7 @@ def pytest_addoption(parser):
         "--browser",
         action="store",
         default="chrome",
-        help="Браузер для тестов: chrome, firefox"
+        help="Браузер для тестов: chrome, firefox",
     )
     parser.addoption(
         "--browser-version",
@@ -33,7 +33,26 @@ def pytest_addoption(parser):
         "--url",
         action="store",
         default="http://localhost:8080/",
-        help="Базовый URL PrestaShop"
+        help="Базовый URL PrestaShop",
+    )
+    parser.addoption(
+        "--browser_version",
+        action="store",
+        default="128.0",
+        help="Версия браузера для Selenoid (например, 128.0)",
+    )
+    parser.addoption(
+        "--executor",
+        action="store",
+        default="local",
+        choices=["local", "selenoid"],
+        help="Где запускать тесты: local (локальный драйвер) или selenoid",
+    )
+    parser.addoption(
+        "--selenoid_url",
+        action="store",
+        default="http://localhost:4444/wd/hub",
+        help="URL Selenoid (wd/hub). Из контейнера: http://selenoid:4444/wd/hub",
     )
 
 
@@ -68,7 +87,7 @@ def driver(request, selenoid_url, browser_name, browser_version):
     elif browser_name == "firefox":
         options = FirefoxOptions()
     else:
-        raise Exception(f"Браузер {browser_name} не поддерживается")
+        raise Exception(f"Executor {executor} не поддерживается")
 
     options.set_capability("browserName", browser_name)
     options.set_capability("browserVersion", browser_version)
@@ -107,7 +126,7 @@ def pytest_runtest_makereport(item, call):
                 allure.attach(
                     web_driver.get_screenshot_as_png(),
                     name="Скриншот при падении",
-                    attachment_type=allure.attachment_type.PNG
+                    attachment_type=allure.attachment_type.PNG,
                 )
         except Exception as e:
             print(f"Не удалось сделать скриншот: {e}")

@@ -5,7 +5,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from src.pom.pages.base_page import BasePage
 from src.pom.locators.presta_shop_signup_locators import SignupLocators
-from src.data.urls import LOGIN_PAGE_URL
 from src.helpers.generate_random_email import generate_random_email
 from src.helpers.make_js_click import make_js_click
 
