@@ -13,14 +13,22 @@
 2. docker run --rm -v ${PWD}:/app --entrypoint allure tests generate /app/allure-results --output /app/allure-report --clean
 3. docker run --rm -v ${PWD}:/app -p 8081:8081 --entrypoint allure tests serve /app/allure-results -h 0.0.0.0 -p 8081
 
+## Тесты для MySQL (PyMySQL)
 
-Для запуска jenkins
-1. docker build -t myjenkins .
-2. docker run -d -v jenkins_home:/var/jenkins_home -p 8088:8080 --restart=on-failure --name jenkins myjenkins
+Фреймворк для работы с БД PrestaShop через PyMySQL.
 
-Дл получения пароля от jenkins
-docker logs <4 первые символа >
+### Структура
 
-Перезапросить пароль
-docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+- `src/conftest.py` — опции `--db-*` и фикстура `db_connection`.
+- `src/lib/db.py` — CRUD-функции для `ps_customer`.
+- `src/tests/test_customer_db.py` — 5 тестов (create/update/delete + негативные).
 
+### Запуск
+
+```bash
+docker build -t prestashop-tests .
+docker run --rm -it --network otus_selenium_prestashop_network prestashop-tests \
+  tests/test_customer_db.py \
+  --db-host=some-mysql --db-port=3306 --db-name=prestashop \
+  --db-user=root --db-password=admin -v
+```

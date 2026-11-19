@@ -32,21 +32,13 @@ ENTRYPOINT ["pytest"]
 CMD []
 ENV PYTHONPATH=/app/src
 
-FROM jenkins/jenkins:lts
-
-USER root
-
-RUN apt update && \
-    apt install -y python3-venv python3-pytest && \
-    apt-get clean
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libglib2.0-0 \
-    libnspr4 \
-    libnss3 \
-    libxcb1 \
-    libdbus-1-3 \
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
+    apt-get update && apt-get install -y \
     chromium \
+    chromium-driver \
+    firefox-esr \
+    gcc \
+    wget \
+    unzip \
+    default-jre \
     && rm -rf /var/lib/apt/lists/*
-
-USER jenkins

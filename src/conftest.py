@@ -5,6 +5,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from src.logger_config import setup_logger
+import pymysql
+import pymysql.cursors
 
 setup_logger()
 
@@ -54,6 +56,17 @@ def pytest_addoption(parser):
         default="http://localhost:4444/wd/hub",
         help="URL Selenoid (wd/hub). Из контейнера: http://selenoid:4444/wd/hub",
     )
+    # --- MySQL options ---
+    parser.addoption("--db-host", action="store",
+                     default="some-mysql", help="MySQL host")
+    parser.addoption("--db-port", action="store",
+                     default=3306, type=int, help="MySQL port")
+    parser.addoption("--db-name", action="store",
+                     default="prestashop", help="MySQL database")
+    parser.addoption("--db-user", action="store",
+                     default="root", help="MySQL user")
+    parser.addoption("--db-password", action="store",
+                     default="admin", help="MySQL password")
 
 
 @pytest.fixture(scope="session")
@@ -130,3 +143,19 @@ def pytest_runtest_makereport(item, call):
                 )
         except Exception as e:
             print(f"Не удалось сделать скриншот: {e}")
+
+
+@pytest.fixture(scope="session")
+def db_connection(request):
+    conn = pymysql.connect(
+        host=request.config.getoption("--db-host"),
+        port=request.config.getoption("--db-port"),
+        user=request.config.getoption("--db-user"),
+        password=request.config.getoption("--db-password"),
+        database=request.config.getoption("--db-name"),
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor,
+        autocommit=False,
+    )
+    yield conn
+    conn.close()
