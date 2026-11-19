@@ -4,7 +4,6 @@ import allure
 from selenium.webdriver.support import expected_conditions as EC
 from src.pom.pages.base_page import BasePage
 from src.pom.locators.presta_shop_cart_locators import CartPageLocators
-from src.data.urls import CART_PAGE_URL
 from src.helpers.make_js_click import make_js_click
 
 logger = logging.getLogger("AutomationFramework.CartPage")
@@ -16,8 +15,8 @@ class CartPage(BasePage):
     @allure.step
     def open(self):
         """Открыть страницу корзины"""
-        logger.info("Открываем страницу корзины - %s", CART_PAGE_URL)
-        self.driver.get(CART_PAGE_URL)
+        logger.info("Открываем страницу корзины - %s", f"{self.base_url}/cart")
+        self.driver.get(f"{self.base_url}/cart")
 
     @allure.step
     def get_page_title(self):
